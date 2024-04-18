@@ -18,7 +18,7 @@ namespace todo_list.api.Controllers
             this.dBContext = dBContext;
         }
 
-        [HttpPost]
+        [HttpPost("/save")]
         public async Task<IActionResult> AddTodoList(TODO todo)
         {
             var taskList = new TaskList();
@@ -43,14 +43,14 @@ namespace todo_list.api.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("/get-all")]
         public async Task<IActionResult> AllTodoList()
         {
             var todoList  = await dBContext.TODO.Include(a => a.TaskList).ToListAsync();
             return Ok(todoList);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("/get-by-id/{id}")]
         public async Task<IActionResult> GetTodoList(int id)
         {
             var todoList = await dBContext.TODO.FindAsync(id);
@@ -63,7 +63,7 @@ namespace todo_list.api.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("/edit")]
         public async Task<IActionResult> Edit(TODO todoTask)
         {
             var hastodoTask = await dBContext.TODO.Include(a => a.TaskList).FirstOrDefaultAsync(a => a.Id == todoTask.Id);
@@ -82,7 +82,7 @@ namespace todo_list.api.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("/delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var hastodoTask = await dBContext.TODO.Include(a => a.TaskList).FirstOrDefaultAsync(a => a.Id == id);
