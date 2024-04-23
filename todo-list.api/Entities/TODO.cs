@@ -7,5 +7,6 @@
         public DateTime CreateDate { get; set; }
         public DateTime? CompletedDate { get; set; }
         public bool IsDone { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

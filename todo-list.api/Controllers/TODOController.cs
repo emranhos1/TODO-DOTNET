@@ -18,7 +18,7 @@ namespace todo_list.api.Controllers
             this.dBContext = dBContext;
         }
 
-        [HttpPost("/save")]
+        [HttpPost("save")]
         public async Task<IActionResult> AddTodoList(TODO todo)
         {
             var taskList = new TaskList();
@@ -30,6 +30,7 @@ namespace todo_list.api.Controllers
             newTodo.CreateDate = DateTime.Now;
             newTodo.CompletedDate = null;
             newTodo.IsDone = false;
+            newTodo.IsDeleted = false;
 
             await dBContext.TODO.AddAsync(newTodo);
             var save = await dBContext.SaveChangesAsync();
@@ -39,21 +40,21 @@ namespace todo_list.api.Controllers
             }
             else
             {
-                return NotFound();
+                return NotFound(); 
             }
         }
 
-        [HttpGet("/get-all")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> AllTodoList()
         {
             var todoList  = await dBContext.TODO.Include(a => a.TaskList).ToListAsync();
             return Ok(todoList);
         }
 
-        [HttpGet("/get-by-id/{id}")]
+        [HttpGet("get-by-id/{id}")]
         public async Task<IActionResult> GetTodoList(int id)
         {
-            var todoList = await dBContext.TODO.FindAsync(id);
+            var todoList = await dBContext.TODO.Include(a => a.TaskList).FirstOrDefaultAsync(a => a.Id == id);
             if (todoList != null)
             {
                 return Ok(todoList);
@@ -63,7 +64,7 @@ namespace todo_list.api.Controllers
             }
         }
 
-        [HttpPut("/edit")]
+        [HttpPut("update")]
         public async Task<IActionResult> Edit(TODO todoTask)
         {
             var hastodoTask = await dBContext.TODO.Include(a => a.TaskList).FirstOrDefaultAsync(a => a.Id == todoTask.Id);
@@ -73,6 +74,7 @@ namespace todo_list.api.Controllers
 
                 hastodoTask.CompletedDate = DateTime.Now;
                 hastodoTask.IsDone = true;
+                hastodoTask.IsDeleted = true;
 
                 await dBContext.SaveChangesAsync();
                 return Ok(hastodoTask);
@@ -82,14 +84,20 @@ namespace todo_list.api.Controllers
             }
         }
 
-        [HttpDelete("/delete/{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            //this is 3rd class of delete concept i dont understand
+
             var hastodoTask = await dBContext.TODO.Include(a => a.TaskList).FirstOrDefaultAsync(a => a.Id == id);
             if (hastodoTask != null)
             {
-                dBContext.Remove(hastodoTask);
+                var deleted = dBContext.Remove(hastodoTask.TaskList);
                 await dBContext.SaveChangesAsync();
+                if (deleted != null)
+                {
+                    dBContext.Remove(hastodoTask);
+                }
 
                 return Ok("Task Deleted Successfully!");
             }

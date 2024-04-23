@@ -1,0 +1,7 @@
+### IDE ###
+.vs/
+
+### code ###
+appsettings.Development.json
+bin/*
+obj/

@@ -1,0 +1,8 @@
+### IDE ###
+.vs/
+
+### code ###
+appsettings.Development.json
+todo-list.api/bin/*
+todo-list.sln
+/todo-list.api/obj/
